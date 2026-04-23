@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/outdoor_product.dart';
 import '../models/registered_user.dart';
+import '../widgets/bottom_navbar.dart';
 import 'cart_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -38,6 +39,8 @@ class _HomePageState extends State<HomePage> {
     'Pakaian',
     'Sepatu',
   ];
+
+  int _selectedNavIndex = 0;
 
   final List<OutdoorProduct> _products = [
     OutdoorProduct(
@@ -118,6 +121,143 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _onNavItemSelected(int index) {
+    setState(() {
+      _selectedNavIndex = index;
+    });
+  }
+
+  Widget _buildCurrentPage(
+    List<OutdoorProduct> filtered,
+    List<OutdoorProduct> newest,
+  ) {
+    switch (_selectedNavIndex) {
+      case 1:
+        return _buildInventoryPage(filtered);
+      case 2:
+        return _buildHistoryPage();
+      case 3:
+        return _buildSettingsPage();
+      case 0:
+      default:
+        return _buildPageContent(filtered, newest);
+    }
+  }
+
+  Widget _buildInventoryPage(List<OutdoorProduct> filtered) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Inventory',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF2D1D16),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Lihat semua barang open trip yang tersedia.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF7B655D),
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 18),
+          _buildGearSection(filtered),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryPage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            'Riwayat',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF2D1D16),
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            'Belum ada riwayat sewa. Semua pesanan Anda akan muncul di sini setelah selesai.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF7B655D),
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsPage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Settings',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF2D1D16),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE8E0D8)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Profil Akun',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 12),
+                Text('Nama: ${widget.currentUser.fullName}'),
+                const SizedBox(height: 6),
+                Text('Email: ${widget.currentUser.email}'),
+                const SizedBox(height: 6),
+                Text('Telepon: ${widget.currentUser.phone}'),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: widget.onLogout,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF5A3B31),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: const Text('Logout'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final filtered = _products.where((product) {
@@ -140,13 +280,20 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewPadding.bottom + 24,
+            bottom: MediaQuery.of(context).viewPadding.bottom + 100,
           ),
-          child: _buildPageContent(filtered, newest),
+          child: _buildCurrentPage(filtered, newest),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: _buildFloatingCartButton(),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: BottomNavbar(
+          currentIndex: _selectedNavIndex,
+          onTap: _onNavItemSelected,
+        ),
+      ),
     );
   }
 
