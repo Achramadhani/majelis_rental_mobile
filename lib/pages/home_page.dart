@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../models/outdoor_product.dart';
 import '../models/registered_user.dart';
+import 'cart_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -37,8 +39,8 @@ class _HomePageState extends State<HomePage> {
     'Sepatu',
   ];
 
-  final List<_OutdoorProduct> _products = [
-    _OutdoorProduct(
+  final List<OutdoorProduct> _products = [
+    OutdoorProduct(
       id: '1',
       name: 'Summit V2 Ultralight',
       category: 'Tenda',
@@ -47,7 +49,7 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=1000&q=80',
     ),
-    _OutdoorProduct(
+    OutdoorProduct(
       id: '2',
       name: 'Osprey Atmos 65',
       category: 'Tas',
@@ -56,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=1000&q=80',
     ),
-    _OutdoorProduct(
+    OutdoorProduct(
       id: '3',
       name: 'Lowa Renegade Mid',
       category: 'Sepatu',
@@ -65,7 +67,7 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=1000&q=80',
     ),
-    _OutdoorProduct(
+    OutdoorProduct(
       id: '4',
       name: 'Jetboil Flash System',
       category: 'Alat Masak',
@@ -75,7 +77,7 @@ class _HomePageState extends State<HomePage> {
           'https://images.unsplash.com/photo-1618397746666-63405ce5d015?auto=format&fit=crop&w=1000&q=80',
       available: false,
     ),
-    _OutdoorProduct(
+    OutdoorProduct(
       id: '5',
       name: 'BioLite SolarPanel 5+',
       category: 'Alat Masak',
@@ -85,7 +87,7 @@ class _HomePageState extends State<HomePage> {
           'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1000&q=80',
       available: true,
     ),
-    _OutdoorProduct(
+    OutdoorProduct(
       id: '6',
       name: 'Petzl Swift RL 900',
       category: 'Pakaian',
@@ -98,7 +100,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   late final Set<String> _favoriteIds;
-  final List<_OutdoorProduct> _cartItems = [];
+  final List<OutdoorProduct> _cartItems = [];
   DateTime _rentalStart = DateTime.now();
   DateTime _rentalEnd = DateTime.now().add(const Duration(days: 3));
   String _selectedPaymentMethod = 'Midtrans Gateway';
@@ -149,8 +151,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildPageContent(
-    List<_OutdoorProduct> filtered,
-    List<_OutdoorProduct> newest,
+    List<OutdoorProduct> filtered,
+    List<OutdoorProduct> newest,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +278,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGearSection(List<_OutdoorProduct> products) {
+  Widget _buildGearSection(List<OutdoorProduct> products) {
     if (products.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -304,7 +306,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGearCard(_OutdoorProduct product) {
+  Widget _buildGearCard(OutdoorProduct product) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -463,152 +465,6 @@ class _HomePageState extends State<HomePage> {
           color: Color(0xFF7B655D),
           fontWeight: FontWeight.w600,
         ),
-      ),
-    );
-  }
-
-  Widget _buildCartPage() {
-    final groupedItems = _groupedCartItems();
-    final durationDays = _rentalEnd.difference(_rentalStart).inDays + 1;
-    final rentalUnitCost = groupedItems.fold<int>(
-      0,
-      (sum, entry) => sum + entry.key.pricePerDay * entry.value,
-    );
-    final subtotalRental = rentalUnitCost * durationDays;
-    const insurance = 15000;
-    const memberDiscount = 20000;
-    final totalCost = subtotalRental + insurance - memberDiscount;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 18,
-                    color: Color(0xFF4D2F24),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text(
-                  'Keranjang',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF2D1D16),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Timeline Petualangan',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF2D1D16),
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Cek tanggal keberangkatan dan pengembalian agar rencana perjalanan tetap aman.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF7B655D),
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF4E9E3),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  '$durationDays HARI',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF4D2F24),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          _buildTimelineCard(durationDays),
-          const SizedBox(height: 24),
-          _buildSectionHeader(
-            '01',
-            'INVENTARIS GEAR',
-            'Daftar gear yang sudah Anda pilih.',
-            actionLabel: groupedItems.isEmpty ? null : 'EDIT KOLEKSI',
-          ),
-          const SizedBox(height: 16),
-          groupedItems.isEmpty
-              ? _buildEmptyCartNotice()
-              : _buildSelectedGearList(groupedItems),
-          const SizedBox(height: 24),
-          _buildSectionHeader(
-            '02',
-            'IDENTITAS & JAMINAN',
-            'Pastikan data identitas valid sebelum melanjutkan.',
-          ),
-          const SizedBox(height: 16),
-          _buildVerificationSection(),
-          const SizedBox(height: 24),
-          _buildSectionHeader(
-            '03',
-            'PERJANJIAN E-KONTRAK',
-            'Setujui syarat dan ketentuan digital.',
-          ),
-          const SizedBox(height: 16),
-          _buildContractSection(),
-          const SizedBox(height: 24),
-          _buildSectionHeader(
-            '04',
-            'METODE PEMBAYARAN',
-            'Pilih metode pembayaran yang tersedia',
-          ),
-          const SizedBox(height: 16),
-          _buildPaymentMethodSection(),
-          const SizedBox(height: 24),
-          _buildBillingSummarySection(
-            durationDays: durationDays,
-            rentalUnitCost: rentalUnitCost,
-            subtotalRental: subtotalRental,
-            insuranceCost: insurance,
-            discount: memberDiscount,
-            totalCost: totalCost,
-          ),
-          const SizedBox(height: 20),
-          _buildFinalizeOrderButton(),
-          const SizedBox(height: 20),
-        ],
       ),
     );
   }
@@ -796,8 +652,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<MapEntry<_OutdoorProduct, int>> _groupedCartItems() {
-    final grouped = <String, MapEntry<_OutdoorProduct, int>>{};
+  List<MapEntry<OutdoorProduct, int>> _groupedCartItems() {
+    final grouped = <String, MapEntry<OutdoorProduct, int>>{};
     for (final item in _cartItems) {
       final current = grouped[item.id];
       if (current == null) {
@@ -809,13 +665,13 @@ class _HomePageState extends State<HomePage> {
     return grouped.values.toList();
   }
 
-  Widget _buildSelectedGearList(List<MapEntry<_OutdoorProduct, int>> items) {
+  Widget _buildSelectedGearList(List<MapEntry<OutdoorProduct, int>> items) {
     return Column(
       children: items.map((entry) => _buildSelectedGearItem(entry)).toList(),
     );
   }
 
-  Widget _buildSelectedGearItem(MapEntry<_OutdoorProduct, int> entry) {
+  Widget _buildSelectedGearItem(MapEntry<OutdoorProduct, int> entry) {
     final product = entry.key;
     final quantity = entry.value;
     return Container(
@@ -1545,7 +1401,7 @@ class _HomePageState extends State<HomePage> {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
-  Widget _buildCartItem(_OutdoorProduct product) {
+  Widget _buildCartItem(OutdoorProduct product) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1596,65 +1452,25 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCartSummary() {
-    final total = _cartItems.fold<int>(
-      0,
-      (sum, product) => sum + product.pricePerDay,
-    );
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAF7F2),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Total sementara',
-                style: TextStyle(color: Color(0xFF7B655D)),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Rp ${_formatRupiah(total)}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF2D1D16),
-                ),
-              ),
-            ],
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _showHomeMessage('Fitur checkout belum tersedia.');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3D2721),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-            ),
-            child: const Text(
-              'Bayar',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildFloatingCartButton() {
     return Stack(
       clipBehavior: Clip.none,
       children: [
         FloatingActionButton(
-          onPressed: _showCartBottomSheet,
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => CartPage(
+                  cartItems: _cartItems,
+                  rentalStart: _rentalStart,
+                  rentalEnd: _rentalEnd,
+                  onRemoveItem: (id) => _removeFromCart(id),
+                  onChangeQuantity: (id, delta) =>
+                      _changeCartQuantity(id, delta),
+                ),
+              ),
+            );
+          },
           tooltip: 'Buka keranjang',
           backgroundColor: const Color(0xFF5A3B31),
           child: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
@@ -1803,7 +1619,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           const Expanded(
             child: Text(
-              'WILDERNESS',
+              'MAJELIS RENTAL',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
@@ -2139,7 +1955,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildPopularSection(List<_OutdoorProduct> products) {
+  Widget _buildPopularSection(List<OutdoorProduct> products) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
       child: Column(
@@ -2297,7 +2113,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNewestSection(List<_OutdoorProduct> products) {
+  Widget _buildNewestSection(List<OutdoorProduct> products) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
       child: Column(
@@ -2340,7 +2156,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildProductCard(_OutdoorProduct product) {
+  Widget _buildProductCard(OutdoorProduct product) {
     final favorite = _favoriteIds.contains(product.id);
     return GestureDetector(
       onTap: () => _showProductDetails(product),
@@ -2423,7 +2239,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSmallProductCard(_OutdoorProduct product) {
+  Widget _buildSmallProductCard(OutdoorProduct product) {
     final isFavourite = _favoriteIds.contains(product.id);
     final statusLabel = product.available ? 'TERSEDIA' : 'PENUH';
     final statusColor = product.available
@@ -2621,7 +2437,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showProductDetails(_OutdoorProduct product) {
+  void _showProductDetails(OutdoorProduct product) {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -2883,6 +2699,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onViewAllCategories() {
+    setState(() {
+      _selectedCategory = 'Semua';
+    });
     _showHomeMessage('Menampilkan semua kategori.');
   }
 
@@ -2909,97 +2728,14 @@ class _HomePageState extends State<HomePage> {
     _showHomeMessage('Geser produk berikutnya.');
   }
 
-  void _showCartBottomSheet() {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return DraggableScrollableSheet(
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-              ),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Keranjang',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xFF2D1D16),
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            Icons.shopping_bag_outlined,
-                            color: Color(0xFF5A3B31),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      if (_cartItems.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Text(
-                            'Keranjang Anda kosong.',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFF7B655D),
-                            ),
-                          ),
-                        )
-                      else
-                        Column(
-                          children: _cartItems
-                              .map(
-                                (product) => ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  title: Text(product.name),
-                                  subtitle: Text(
-                                    'Rp ${_formatRupiah(product.pricePerDay)} / hari',
-                                  ),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.delete_outline),
-                                    onPressed: () =>
-                                        _removeFromCart(product.id),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      const SizedBox(height: 20),
-                      _buildCartSummary(),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _quickAddToCart(_OutdoorProduct product) {
+  void _quickAddToCart(OutdoorProduct product) {
     setState(() {
       _cartItems.add(product);
     });
     _showHomeMessage('${product.name} berhasil ditambahkan ke keranjang.');
   }
 
-  void _addToCart(_OutdoorProduct product) {
+  void _addToCart(OutdoorProduct product) {
     _quickAddToCart(product);
   }
 
@@ -3022,24 +2758,4 @@ class _HomePageState extends State<HomePage> {
         ),
       );
   }
-}
-
-class _OutdoorProduct {
-  _OutdoorProduct({
-    required this.id,
-    required this.name,
-    required this.category,
-    required this.location,
-    required this.pricePerDay,
-    required this.imageUrl,
-    this.available = true,
-  });
-
-  final String id;
-  final String name;
-  final String category;
-  final String location;
-  final int pricePerDay;
-  final String imageUrl;
-  final bool available;
 }

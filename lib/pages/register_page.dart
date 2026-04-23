@@ -302,6 +302,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     _showMessage('Registrasi berhasil. Silakan masuk.', isError: false);
     Future.delayed(const Duration(milliseconds: 800), () {
+      if (!mounted) return;
       Navigator.pop(context, user);
     });
   }
